@@ -1,73 +1,91 @@
-class NodeLetter:
-    def __init__(self, freq, value, childs = list()):
-        self.freq = freq
-        self.value = value
-        self.childs = childs
-        self.code = ""
+from collections import Counter,  namedtuple
+import heapq
+
+class Node(namedtuple("Node", ["left", "right"])):
+    def walk(self, code: dict, acc: str):
+        """
+        :param code: dict - char : code
+        :param acc: prefix code
+        :return:
+        """
+        self.left.walk(code, acc + "0")
+        self.right.walk(code, acc + "1")
 
 
-s = input()
+class Leaf(namedtuple("Leaf", ["char"])):
+    def walk(self, code: dict, acc: str):
+        """
+        :param code: dict - char : code
+        :param acc: prefix code
+        :return:
+        """
+        code[self.char] = acc or "0"
 
-letters = dict()
-value = 'value'
-freq = 'freq'
-childs = 'child'
 
-for l in s:
-    if l not in letters:
-        letters[l] = dict()
-        letters[l][freq] = 1
-        letters[l][value] = l
-    else:
-        letters[l][freq] += 1
+def huffman_encode(s: str) -> dict:
+    # create heap
+    h = []
+    for ch, freq in Counter(s).items():
+        h.append((freq, len(h), Leaf(ch)))
+    heapq.heapify(h)
 
-inpud_data = list()
-for l in letters.values():
-    inpud_data.append(NodeLetter(l[freq], l[value]))
+    count = len(h)
+    while len(h) > 1:
+        # get 2 node or leaf with min freq
+        freq1, _count1, left = heapq.heappop(h)
+        freq2, _count2, right = heapq.heappop(h)
+        # create new element (node)
+        heapq.heappush(h, (freq1+freq2, count, Node(left, right)))
+        count += 1
 
-inpud_data.sort(key=lambda l: l.freq, reverse=True)
+    code = {}
+    if h:
+        [(_freq, _count, root)] = h
+        root.walk(code, "")
 
-nodes = list()
+    return code
 
-while len(inpud_data) > 1:
-    # select letters with min frequency
-    l_min_1 = min(inpud_data, key=lambda l: l.freq)
-    inpud_data.remove(l_min_1)
-    l_min_2 = min(inpud_data, key=lambda l: l.freq)
-    inpud_data.remove(l_min_2)
 
-    # create node with new childs
+def huffman_decode(codes: dict, encodeed_str: str)->str:
+    decode_str = ""
+    code_cur = ""
+    codes_reverse = {v: k for k, v in codes.items()}
+    for b in encodeed_str:
+        code_cur += b
+        if code_cur in codes_reverse:
+            decode_str += codes_reverse[code_cur]
+            code_cur = ""
+    return decode_str
 
-    nodes.append(NodeLetter(l_min_1.freq + l_min_2.freq, "node" + str(len(nodes)), [l_min_1, l_min_2]))
 
-    inpud_data.append(nodes[-1])
+def test(n_iter = 5):
+    print('testing startet')
+    import random
+    import string
 
-if len(inpud_data) > 0 and len(inpud_data[0].childs) == 0:
-    childs
-    node = NodeLetter(inpud_data[0].freq, "node" + str(len(nodes)))
-    node.childs = [inpud_data[0],]
-    nodes.append(node)
+    for i in range(n_iter):
+        # generation test string
+        lenght = random.randint(0, 50)
+        s = "".join(random.choice(string.ascii_letters) for _ in range(lenght))
+        code = huffman_encode(s)
+        encoded = "".join(code[ch] for ch in s)
+        decode = huffman_decode(code, encoded)
+        if  decode != s:
+            print("test", i+1)
+            print(f"\tinput string: {s}", f"\tcode string: {encoded}", f"\tdecode string: {decode}", sep="\n")
+    print('testing completed')
 
-# formating output data
-num_letters = 0
-base_code = ["", ""]
-size = "size"
-letters_code = dict()
 
-# calculate letter code (node selection in ascending order of frequency)
-for node in nodes[-1::-1]:
-    for child_id in range(len(node.childs)):
-        letter = node.childs[child_id].value
-        if len(letter) == 1: # if not a node
-            num_letters += 1
-            letters_code[letter] = node.code + str(child_id)
-        else:
-            node.childs[child_id].code = node.code + str(child_id)
+def main():
+    s = input()
+    code = huffman_encode(s)
+    encoded = "".join(code[ch] for ch in s)
+    print(len(code), len(encoded))
+    for ch in sorted(code):
+        print("{}: {}".format(ch, code[ch]))
+    print(encoded)
 
-out_code = ""
-for l in s:
-    out_code += letters_code[l]
-print(num_letters, len(out_code))
-for l in letters_code:
-    print(l+":", letters_code[l])
-print(out_code)
+
+if __name__ == "__main__":
+    test()
+    # main()
