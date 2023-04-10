@@ -1,25 +1,28 @@
 import time
 import random
+import cProfile
 
 
 def merge(left_part: list, right_part: list) -> tuple:
     comb_data = []
     num_inv = 0
     indx_left = 0
+    indx_right = 0
     len_left_part_start = len(left_part)
 
-    while len(left_part) and len(right_part):
-        if left_part[0] <= right_part[0]:
-            comb_data.append(left_part.pop(0))
+    while indx_left < len(left_part) and indx_right < len(right_part):
+        if left_part[indx_left] <= right_part[indx_right]:
+            comb_data.append(left_part[indx_left])
             indx_left += 1
         else:
-            comb_data.append(right_part.pop(0))
+            comb_data.append(right_part[indx_right])
             num_inv += len_left_part_start - indx_left
+            indx_right += 1
 
-    if len(left_part):
-        comb_data += left_part
-    elif len(right_part):
-        comb_data += right_part
+    if indx_left < len(left_part):
+        comb_data += left_part[indx_left:]
+    elif indx_right < len(right_part):
+        comb_data += right_part[indx_right:]
 
     return comb_data, num_inv
 
@@ -63,5 +66,7 @@ def main():
 
 
 if __name__ == "__main__":
+    # cProfile.run('main()')
     test()
     # main()
+
