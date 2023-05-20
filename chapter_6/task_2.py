@@ -45,13 +45,12 @@ def merge_sorting_recursive(src_array: list) -> tuple:
     n = len(src_array)
     if n == 1:
         return src_array, 0
-    else:
-        mid = n // 2
-        left_part, num_inv_left = merge_sorting_recursive(src_array[:mid])
-        right_part, num_inv_right = merge_sorting_recursive(src_array[mid:])
-        merged_array, num_inv_merged = merge(left_part, right_part)
-        return  merged_array, num_inv_merged + num_inv_left + num_inv_right
 
+    mid = n // 2
+    left_part, num_inv_left = merge_sorting_recursive(src_array[:mid])
+    right_part, num_inv_right = merge_sorting_recursive(src_array[mid:])
+    merged_array, num_inv_merged = merge(left_part, right_part)
+    return  merged_array, num_inv_merged + num_inv_left + num_inv_right
 
 
 def generate_input_array(size_array: int, max_value: int = 10**9) -> list:
