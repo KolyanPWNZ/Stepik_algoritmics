@@ -67,7 +67,7 @@ def test():
         end_time = time.time()
         total_time += end_time - start_time
     avg_time = total_time / num_tests
-    print("Среднее ремя выполнение программы: {:.5f} секунд".format(avg_time))
+    print("Average program execution time: {:.5f} sec".format(avg_time))
 
 
 def main():
