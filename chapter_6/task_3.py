@@ -1,3 +1,4 @@
+import random
 
 
 def read_points():
@@ -18,7 +19,9 @@ def swap_el(A, i, j):
 
 
 def partition(array_part, column_index) -> int:
+    pivot_index = random.randint(0, len(array_part)-1)
     l = 0
+    swap_el(array_part, pivot_index, l)
     pivot = array_part[l][column_index]
     j = l
     for i in range(1, len(array_part)):
@@ -41,31 +44,59 @@ def quick_sort_2d_array(array: list, column_index: int = 0) -> list:
     return left_part + [array[m]] + right_part
 
 
-def points_and_segments(segments: list, points: list):
-    quick_sort_2d_array(segments)
+def left_border_search(segments: list, point: int) -> int:
+    counter_entry = 0
+    for segment in segments:
+        if segment[0] > point:
+            break
+        counter_entry = counter_entry + 1
+    return counter_entry
+
+
+def right_border_search(segments: list, point: int) -> int:
+    counter_entry = 0
+    for segment in segments:
+        if segment[1] >= point:
+            break
+        counter_entry = counter_entry + 1
+    return counter_entry
+
+
+def points_and_segments(segments: list, points: list) -> list:
+    segments_sort_by_left_side = quick_sort_2d_array(segments, 0)
+    segments_sort_by_right_side = quick_sort_2d_array(segments, 1)
+
+    result_intersection = list()
     for point in points:
-        counter_entry = 0
-        for segment in segments:
-            if segment[0] <= point <= segment[1]:
-                counter_entry = counter_entry + 1
-        print(counter_entry, end=" ")
+        n = left_border_search(segments_sort_by_left_side, point)
+        m = right_border_search(segments_sort_by_right_side, point)
+        result_intersection.append(n-m)
+    return result_intersection
+
+
+def print_result(results: list):
+    for r in results:
+        print(r, end=" ")
 
 
 def test():
     array_src_1 = [[3, 4], [6, 3], [2, 3], [5, 3], [1, 5], [4, 6]]
     array_dst_1 = [[1, 5], [2, 3], [3, 4], [4, 6], [5, 3], [6, 3]]
-    assert quick_sort_2d_array(array_src_1) == array_dst_1, "test№1 - failed: non-correct quick sort"
+    assert quick_sort_2d_array(array_src_1) == array_dst_1, "test №1 - failed: non-correct quick sort"
 
-    # segments = [[0, 3], [1, 3], [2, 3], [3, 4], [3, 5], [3, 6]]
-    # points = [1, 2, 3, 4, 5, 6]
-    # assert points_and_segments(segments, points)
+    segments = [[0, 3], [1, 3], [2, 3], [3, 4], [3, 5], [3, 6]]
+    points = [1, 2, 3, 4, 5, 6]
+    result = points_and_segments(segments, points)
+    result_target = [2, 3, 6, 3, 2, 1]
+    assert result == result_target, "test №2 - failed: non-correct result of algorithm"
+    print_result(result)
 
 
 def main():
     segments, points = read_data()
-    points_and_segments(segments, points)
+    print_result(points_and_segments(segments, points))
 
 
 if __name__ == "__main__":
-    test()
+    # test()
     main()
