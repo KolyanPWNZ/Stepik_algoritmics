@@ -1,4 +1,5 @@
 import random
+import time
 
 
 def read_points():
@@ -79,6 +80,17 @@ def print_result(results: list):
         print(r, end=" ")
 
 
+def generate_input_data(num_segments: int, num_points: int, limit_coordinate_size = 100000000) -> tuple:
+    segments = list()
+    for _ in range(num_segments):
+        lb = random.randint(0, limit_coordinate_size-1)
+        rb = random.randint(lb+1, limit_coordinate_size)
+        segments.append([lb, rb])
+    points = [random.randint(0, limit_coordinate_size) for _ in range (num_points)]
+
+    return segments, points
+
+
 def test():
     array_src_1 = [[3, 4], [6, 3], [2, 3], [5, 3], [1, 5], [4, 6]]
     array_dst_1 = [[1, 5], [2, 3], [3, 4], [4, 6], [5, 3], [6, 3]]
@@ -89,14 +101,24 @@ def test():
     result = points_and_segments(segments, points)
     result_target = [2, 3, 6, 3, 2, 1]
     assert result == result_target, "test №2 - failed: non-correct result of algorithm"
-    print_result(result)
+
+    segments, points = generate_input_data(5000, 1000)
+    num_tests = 10
+    total_time = 0
+    for _ in range(num_tests):
+        start_time = time.time()
+        print(*points_and_segments(segments, points))
+        total_time += time.time() - start_time
+    avg_time = total_time / num_tests
+    print("Average program execution time: {:.5f} sec".format(avg_time))
+
 
 
 def main():
     segments, points = read_data()
-    print_result(points_and_segments(segments, points))
+    print(*points_and_segments(segments, points))
 
 
 if __name__ == "__main__":
-    # test()
-    main()
+    test()
+    # main()
