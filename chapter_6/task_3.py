@@ -117,11 +117,16 @@ def test():
     segments, points = generate_input_data(5000, 1000)
     num_tests = 10
     total_time = 0
+    profiler = cProfile.Profile()
+    profiler.enable()
     for _ in range(num_tests):
         start_time = time.time()
         print(*points_and_segments(segments, points))
         total_time += time.time() - start_time
     avg_time = total_time / num_tests
+
+    profiler.disable()
+    profiler.print_stats()
     print("Average program execution time: {:.5f} sec".format(avg_time))
 
 
