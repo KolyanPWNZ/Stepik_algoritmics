@@ -17,30 +17,23 @@ def read_data() -> tuple:
     return read_segments(n), read_points()
 
 
-def swap_el(A, i, j):
-    try:
-        A[i], A[j] = A[j], A[i]
-    except IndexError as error:
-        print(error)
-
-
 def partition(array_part, column_index, lb, rb) -> int:
     mid = (lb + rb) // 2
     if array_part[mid][column_index] < array_part[lb][column_index]:
-        swap_el(array_part, lb, mid)
+        array_part[lb], array_part[mid] = array_part[mid], array_part[lb]
     if array_part[rb][column_index] < array_part[lb][column_index]:
-        swap_el(array_part, lb, rb)
+        array_part[lb], array_part[rb] = array_part[rb], array_part[lb]
     if array_part[rb][column_index] < array_part[mid][column_index]:
-        swap_el(array_part, mid, rb)
+        array_part[rb], array_part[mid] = array_part[mid], array_part[rb]
 
     pivot = array_part[lb][column_index]
     j = lb
     for i in range(lb+1, rb+1):
         if array_part[i][column_index] < pivot:
             j = j + 1
-            swap_el(array_part, i, j)
+            array_part[i], array_part[j] = array_part[j], array_part[i]
 
-    swap_el(array_part, lb, j)
+    array_part[lb], array_part[j] = array_part[j], array_part[lb]
     return j
 
 
