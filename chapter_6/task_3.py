@@ -2,6 +2,7 @@ import copy
 import random
 import time
 import cProfile
+from bisect import bisect_left, bisect_right
 
 
 def read_points():
@@ -70,8 +71,8 @@ def quick_sort_2d_array_v2(array, fst, lst, column_index):
 
 
 def quick_sort_2d_array(array: list, lb: int, rb: int,  column_index: int = 0):
-    quick_sort_2d_array_v1(array, lb, rb, column_index)
-    # quick_sort_2d_array_v2(array, lb, rb, column_index)
+    # quick_sort_2d_array_v1(array, lb, rb, column_index)
+    quick_sort_2d_array_v2(array, lb, rb, column_index)
 
 
 def left_border_search(segments: list, point: int) -> int:
@@ -101,9 +102,6 @@ def right_border_search(segments: list, point: int) -> int:
 def points_and_segments(segments: list, points: list) -> list:
     segments_sort_by_left_side = copy.copy(segments)
     segments_sort_by_right_side = copy.copy(segments)
-
-    # qsort(segments_sort_by_left_side, 0, 0, len(segments)-1)
-    # qsort(segments_sort_by_right_side, 1, 0, len(segments)-1)
 
     quick_sort_2d_array(segments_sort_by_left_side, 0, len(segments)-1, 0)
     quick_sort_2d_array(segments_sort_by_right_side, 0, len(segments)-1, 1)
@@ -163,6 +161,15 @@ def main():
     print(*points_and_segments(segments, points))
 
 
+def other_implementation():
+    n, m = map(int, input().split())
+    segments = zip(*(map(int, input().split()) for _ in range(n)))
+    a, b = map(sorted, segments)
+    res = (bisect_right(a, p) - bisect_left(b, p) for p in map(int, input().split()))
+    print(*res)
+
+
 if __name__ == "__main__":
     # test()
-    main()
+    # main()
+    other_implementation()
