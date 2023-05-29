@@ -17,36 +17,61 @@ def read_data() -> tuple:
     return read_segments(n), read_points()
 
 
-def partition(array_part, column_index, lb, rb) -> int:
-    mid = (lb + rb) // 2
-    if array_part[mid][column_index] < array_part[lb][column_index]:
-        array_part[lb], array_part[mid] = array_part[mid], array_part[lb]
-    if array_part[rb][column_index] < array_part[lb][column_index]:
-        array_part[lb], array_part[rb] = array_part[rb], array_part[lb]
-    if array_part[rb][column_index] < array_part[mid][column_index]:
-        array_part[rb], array_part[mid] = array_part[mid], array_part[rb]
+def partition(array_part, column_index, began, end) -> int:
+    mid = (began + end) // 2
+    if array_part[mid][column_index] < array_part[began][column_index]:
+        array_part[began], array_part[mid] = array_part[mid], array_part[began]
+    if array_part[end][column_index] < array_part[began][column_index]:
+        array_part[began], array_part[end] = array_part[end], array_part[began]
+    if array_part[end][column_index] < array_part[mid][column_index]:
+        array_part[end], array_part[mid] = array_part[mid], array_part[end]
 
-    pivot = array_part[lb][column_index]
-    j = lb
-    for i in range(lb+1, rb+1):
+    pivot = array_part[began][column_index]
+    j = began
+    for i in range(began+1, end+1):
         if array_part[i][column_index] < pivot:
             j = j + 1
             array_part[i], array_part[j] = array_part[j], array_part[i]
 
-    array_part[lb], array_part[j] = array_part[j], array_part[lb]
+    array_part[began], array_part[j] = array_part[j], array_part[began]
     return j
 
 
-def quick_sort_2d_array(array: list, column_index: int = 0, lb: int = 0, rb: int = 0):
-    stack = [(lb, rb)]
+def quick_sort_2d_array_v1(array: list, fst: int, lst: int, column_index: int = 0):
+    stack = [(fst, lst)]
     while stack:
-        lb, rb = stack.pop()
-        if lb >= rb:
+        fst, lst = stack.pop()
+        if fst >= lst:
             continue
 
-        m = partition(array, column_index, lb, rb)
-        stack.append((lb, m - 1))
-        stack.append((m + 1, rb))
+        m = partition(array, column_index, fst, lst)
+        stack.append((fst, m - 1))
+        stack.append((m + 1, lst))
+
+
+def quick_sort_2d_array_v2(array, fst, lst, column_index):
+    if fst >= lst:
+        return
+
+    i, j = fst, lst
+    pivot = array[random.randint(fst, lst)][column_index]
+
+    while i <= j:
+        while array[i][column_index] < pivot:
+            i += 1
+        while array[j][column_index] > pivot:
+            j -= 1
+
+        if i <= j:
+            array[i], array[j] = array[j], array[i]
+            i, j = i + 1, j - 1
+    quick_sort_2d_array_v2(array, fst, j, column_index)
+    quick_sort_2d_array_v2(array, i, lst, column_index)
+
+
+def quick_sort_2d_array(array: list, lb: int, rb: int,  column_index: int = 0):
+    quick_sort_2d_array_v1(array, lb, rb, column_index)
+    # quick_sort_2d_array_v2(array, lb, rb, column_index)
 
 
 def left_border_search(segments: list, point: int) -> int:
@@ -77,8 +102,11 @@ def points_and_segments(segments: list, points: list) -> list:
     segments_sort_by_left_side = copy.copy(segments)
     segments_sort_by_right_side = copy.copy(segments)
 
-    quick_sort_2d_array(segments_sort_by_left_side, 0, 0, len(segments)-1)
-    quick_sort_2d_array(segments_sort_by_right_side, 1, 0, len(segments)-1)
+    # qsort(segments_sort_by_left_side, 0, 0, len(segments)-1)
+    # qsort(segments_sort_by_right_side, 1, 0, len(segments)-1)
+
+    quick_sort_2d_array(segments_sort_by_left_side, 0, len(segments)-1, 0)
+    quick_sort_2d_array(segments_sort_by_right_side, 0, len(segments)-1, 1)
 
     result_intersection = list()
     for point in points:
@@ -103,7 +131,7 @@ def test():
     print("test №1")
     array_src_1 = [[3, 4], [6, 3], [2, 3], [5, 3], [1, 5], [4, 6]]
     array_dst_1 = [[1, 5], [2, 3], [3, 4], [4, 6], [5, 3], [6, 3]]
-    quick_sort_2d_array(array_src_1, 0, 0, len(array_src_1)-1)
+    quick_sort_2d_array(array_src_1, 0, len(array_src_1)-1, 0)
     assert array_src_1 == array_dst_1, f"test №1 - failed: non-correct quick sort - {array_src_1}"
 
     print("test №2")
@@ -136,6 +164,5 @@ def main():
 
 
 if __name__ == "__main__":
-    # cProfile.run('test()')
-    test()
-    # main()
+    # test()
+    main()
