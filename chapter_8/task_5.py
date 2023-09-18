@@ -74,7 +74,7 @@ def test(method: Method = Method.TO_DOWN):
     assert 3 == ladder(3, [-1, 2, 1], method=method), "test 10  is failed"
     assert 2 == ladder(1, [2], method=method), "test 11  is failed"
     assert -2 == ladder(1, [-2], method=method), "test 12  is failed"
-    print ("testing is finished")
+    print("testing is finished")
 
 
 def main(method: Method = Method.TO_DOWN):
