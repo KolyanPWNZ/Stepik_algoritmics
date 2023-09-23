@@ -11,16 +11,17 @@ class TernaryHeap:
             self._insert(self.root, value)
 
     def _insert(self, node, value):
-        if node.left is None:
-            node.left = TreeNode(value)
-        elif node.middle is None:
-            node.middle = TreeNode(value)
-        elif node.right is None:
-            node.right = TreeNode(value)
-        else:
-            # Если все потомки заполнены, рекурсивно вызываем _insert
-            # на левом потомке для балансировки дерева
-            self._insert(node.left, value)
+        if node is None:
+            return TreeNode(value)  # Создаем новый узел, если текущий узел None
+
+        # Выбираем поддерево для вставки
+        if value < node.value:
+            node.left = self._insert(node.left, value)
+        elif value > node.value:
+            node.middle = self._insert(node.middle, value)
+        # Не вставляем дубликаты
+
+        return node
 
     def extract_max(self):
         if self.root is None:
