@@ -1,4 +1,4 @@
-
+from collections import deque
 
 class TernaryHeap:
     def __init__(self):
@@ -75,6 +75,25 @@ class TernaryHeap:
         right_result = self._find_parent(node.right, value, parent)
         if right_result:
             return right_result
+
+    def display(self):
+        if self.root is None:
+            print("Куча пуста.")
+            return
+
+        queue = deque()
+        queue.append(self.root)
+
+        while queue:
+            node = queue.popleft()
+            print(node.value, end=" ")
+
+            if node.left:
+                queue.append(node.left)
+            if node.middle:
+                queue.append(node.middle)
+            if node.right:
+                queue.append(node.right)
 
 
 class TreeNode:
