@@ -46,11 +46,39 @@ def specific_calculator_deque(n):
         k += 1
 
     sequence.reverse()
-    return k, *sequence
+    return k, sequence
 
 
-def specific_calculator_bu(b) -> tuple:
-    return 1
+def specific_calculator_bu(n) -> tuple:
+    dp = [0] * (n + 1)
+    operations = [None] * (n + 1)
+
+    for i in range(2, n + 1):
+        dp[i] = dp[i - 1] + 1
+        operations[i] = 1
+
+        if i % 2 == 0 and dp[i // 2] + 1 < dp[i]:
+            dp[i] = dp[i // 2] + 1
+            operations[i] = 2
+
+        if i % 3 == 0 and dp[i // 3] + 1 < dp[i]:
+            dp[i] = dp[i // 3] + 1
+            operations[i] = 3
+
+    k = dp[n]
+    sequence = [n]
+
+    while n != 1:
+        if operations[n] == 1:
+            n -= 1
+        elif operations[n] == 2:
+            n //= 2
+        else:
+            n //= 3
+        sequence.append(n)
+
+    sequence.reverse()
+    return k, sequence
 
 
 def specific_calculator(n: int, method: Method = Method.BOTTOM_UP) -> tuple:
@@ -73,31 +101,37 @@ def test(method: Method = Method.BOTTOM_UP):
     tests = [
         {
             "in": 10,
-            "out": (3, 1, 3, 9, 10)
+            "out": [(3, [1, 3, 9, 10])]
         },
         {
             "in": 1,
-            "out": (0, 1)
+            "out": [(0, [1])]
         },
         {
             "in": 5,
-            "out": (3, 1, 2, 4, 5)
+            "out": [(3, [1, 2, 4, 5]),
+                    (3, [1, 3, 4, 5])]
         },
         {
             "in": 96234,
-            "out": (14, 1, 3, 9, 10, 11, 22, 66, 198, 594, 1782, 5346, 16038, 16039, 32078, 96234)
+            "out": [(14, [1, 3, 9, 10, 11, 22, 66, 198, 594, 1782, 5346, 16038, 16039, 32078, 96234]),
+                    (14, [1, 3, 9, 10, 11, 33, 99, 297, 891, 2673, 8019, 16038, 16039, 48117, 96234]),
+                    (14, [1, 2, 6, 7, 21, 22, 66, 198, 594, 1782, 5346, 16038, 16039, 32078, 96234])]
         }
     ]
     for index, test_current in enumerate(tests):
         result = specific_calculator(test_current["in"], method)
-        assert test_current["out"] == result, f"test №{index+1} is failed, a value {test_current['out']} was expected," \
-                                              f"and {result} was received"
+        assert result in test_current["out"], f"test №{index+1} is failed, expected values from this list {test_current['out']}," \
+                                              f" but this values {result} was received"
+    print("testing is finished")
 
 
 def main(method: Method = Method.BOTTOM_UP):
-    specific_calculator(read_data(), method)
+    k, values = specific_calculator(read_data(), method)
+    print(k)
+    print(*values)
 
 
 if __name__ == "__main__":
-    test(method=Method.DEQUE)
-    # main(method=Method.TOP_DOWN)
+    # test(method=Method.BOTTOM_UP)
+    main(method=Method.BOTTOM_UP)
