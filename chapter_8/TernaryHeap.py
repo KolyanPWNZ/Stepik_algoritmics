@@ -1,5 +1,6 @@
 from collections import deque
 
+
 class TernaryHeap:
     def __init__(self):
         self.root = None
@@ -11,17 +12,16 @@ class TernaryHeap:
             self._insert(self.root, value)
 
     def _insert(self, node, value):
-        if node is None:
-            return TreeNode(value)  # Создаем новый узел, если текущий узел None
-
-        # Выбираем поддерево для вставки
-        if value < node.value:
-            node.left = self._insert(node.left, value)
-        elif value > node.value:
-            node.middle = self._insert(node.middle, value)
-        # Не вставляем дубликаты
-
-        return node
+        if node.left is None:
+            node.left = TreeNode(value)
+        elif node.middle is None:
+            node.middle = TreeNode(value)
+        elif node.right is None:
+            node.right = TreeNode(value)
+        else:
+            # Если все потомки заполнены, рекурсивно вызываем _insert
+            # на левом потомке для балансировки дерева
+            self._insert(node.left, value)
 
     def extract_max(self):
         if self.root is None:
@@ -95,6 +95,60 @@ class TernaryHeap:
             if node.right:
                 queue.append(node.right)
 
+    def display_nodes(self):
+        if self.root is None:
+            print("Куча пуста.")
+            return
+
+        self._display_nodes_recursive(self.root, level=0)
+
+    def _display_nodes_recursive(self, node, level):
+        if node:
+            # Выводим информацию о текущем узле
+            print(f"узел {node.value}:")
+            print(f"  число узла: {node.value}")
+            print(f"  его лепестки:", end=" ")
+
+            # Выводим значения лепестков текущего узла
+            if node.left:
+                print(node.left.value, end=", ")
+            if node.middle:
+                print(node.middle.value, end=", ")
+            if node.right:
+                print(node.right.value, end=" ")
+
+            print()  # Переход на новую строку
+
+            # Рекурсивно обходим лепестки
+            self._display_nodes_recursive(node.left, level + 1)
+            self._display_nodes_recursive(node.middle, level + 1)
+            self._display_nodes_recursive(node.right, level + 1)
+
+    def find_node(self, value):
+        if self.root is None:
+            return None
+        return self._find_node_recursive(self.root, value)
+
+    def _find_node_recursive(self, node, value):
+        if node is None:
+            return None
+
+        if node.value == value:
+            return node
+
+        # Рекурсивный поиск во всех поддеревьях
+        left_result = self._find_node_recursive(node.left, value)
+        if left_result:
+            return left_result
+
+        middle_result = self._find_node_recursive(node.middle, value)
+        if middle_result:
+            return middle_result
+
+        right_result = self._find_node_recursive(node.right, value)
+        if right_result:
+            return right_result
+
 
 class TreeNode:
     def __init__(self, value):
@@ -102,3 +156,13 @@ class TreeNode:
         self.left = None
         self.middle = None
         self.right = None
+
+    def insert(self, value):
+        if not self.value:
+            assert "empty node"
+        if not self.left:
+            self.left = value
+        elif not self.middle:
+            self.middle = value
+        elif not self.right:
+            self.right = value
